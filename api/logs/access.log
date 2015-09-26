@@ -1,0 +1,88 @@
+2015/09/18 15:46:19 start save avatar
+2015/09/18 16:06:11 start save avatar
+2015/09/18 16:06:11 add to sc_user succ. uid:2
+2015/09/18 16:06:11 add to sc_pwds succ
+2015/09/18 16:09:51 start save avatar
+2015/09/18 16:09:51 add to sc_user succ. uid:3
+2015/09/18 16:09:51 add to sc_pwds succ. id:
+2015/09/18 16:09:51 delete from sc_user succ. id:3
+2015/09/18 16:09:51 delete from sc_pwds succ. id:3
+2015/09/18 16:15:00 start save avatar
+2015/09/18 16:15:00 add to sc_user succ. uid:4
+2015/09/18 16:15:00 add to sc_pwds succ. id:0
+2015/09/18 16:15:00 avatar name or size less than 0
+2015/09/18 16:15:00 delete from sc_user succ. id:4
+2015/09/18 16:15:00 delete from sc_pwds succ. id:0
+2015/09/18 16:15:57 start save avatar
+2015/09/18 16:15:57 add to sc_user succ. uid:5
+2015/09/18 16:15:57 add to sc_pwds succ. id:37
+2015/09/18 16:15:57 avatar name or size less than 0
+2015/09/18 16:15:57 delete from sc_user succ. id:5
+2015/09/18 16:15:57 delete from sc_pwds succ. id:37
+2015/09/18 16:17:58 start save avatar
+2015/09/18 16:17:58 add to sc_user succ. uid:6
+2015/09/18 16:17:58 add to sc_pwds succ. id:38
+2015/09/18 16:17:58 avatar name or size less than 0
+2015/09/18 16:17:58 delete from sc_user succ. id:6
+2015/09/18 16:17:58 delete from sc_pwds succ. id:38
+2015/09/18 16:23:33 start save avatar
+2015/09/18 16:23:33 add to sc_user succ. uid:7
+2015/09/18 16:23:33 add to sc_pwds succ. id:39
+2015/09/18 16:23:33 avatar name or size less than 0
+2015/09/18 16:23:33 delete from sc_user succ. id:7
+2015/09/18 16:23:33 delete from sc_pwds succ. id:39
+2015/09/18 16:28:17 start save avatar
+2015/09/18 16:28:17 add to sc_user succ. uid:8
+2015/09/18 16:28:17 add to sc_pwds succ. id:40
+2015/09/18 16:28:17 avatar name or size less than 0
+2015/09/18 16:28:17 delete from sc_user succ. id:8
+2015/09/18 16:28:17 delete from sc_pwds succ. id:40
+2015/09/18 16:33:40 add to sc_user succ. uid:9
+2015/09/18 16:33:40 add to sc_pwds succ. id:41
+2015/09/18 16:33:40 create user dir succ. uid:9
+2015/09/18 16:37:38 add to sc_user succ. uid:10
+2015/09/18 16:37:38 add to sc_pwds succ. id:42
+2015/09/18 16:37:38 create user dir succ. uid:10
+2015/09/18 17:21:15 add to sc_user succ. uid:11
+2015/09/18 17:21:15 add to sc_pwds succ. id:43
+2015/09/18 17:21:15 create user dir succ. uid:11
+2015/09/18 17:23:57 add to sc_user succ. uid:12
+2015/09/18 17:23:57 add to sc_pwds succ. id:44
+2015/09/18 17:23:57 create user dir succ. uid:12
+2015/09/18 17:27:04 add to sc_user succ. uid:13
+2015/09/18 17:27:04 add to sc_pwds succ. id:45
+2015/09/18 17:27:04 create user dir succ. uid:13
+2015/09/18 17:27:04 avatar name or size less than 0
+2015/09/18 17:27:04 delete from sc_user succ. id:13
+2015/09/18 17:27:04 delete from sc_pwds succ. id:45
+2015/09/18 17:27:04 unlink succ:/data1/htdocs/sc/data//13/avatar/
+2015/09/18 17:28:50 add to sc_user succ. uid:14
+2015/09/18 17:28:50 add to sc_pwds succ. id:46
+2015/09/18 17:28:50 create user dir succ. uid:14
+2015/09/18 17:47:01 add to sc_user succ. uid:15
+2015/09/18 17:47:01 add to sc_pwds succ. id:47
+2015/09/18 17:47:01 register succ.
+2015/09/18 17:50:10 add to sc_user succ. uid:16
+2015/09/18 17:50:10 add to sc_pwds succ. id:48
+2015/09/18 17:50:10 create user dir succ. uid:16
+2015/09/18 18:16:52 add to sc_user succ. uid:17
+2015/09/18 18:16:52 add to sc_pwds succ. id:49
+2015/09/18 18:16:52 create user dir succ. uid:17
+2015/09/18 18:16:52 upload avatar succ
+2015/09/18 18:16:52 register succ.
+2015/09/18 18:22:04 add to sc_user succ. uid:18
+2015/09/18 18:22:04 add to sc_pwds succ. id:50
+2015/09/18 18:22:04 create user dir succ. uid:18
+2015/09/18 18:22:04 upload avatar succ
+2015/09/18 18:22:04 register succ.
+2015/09/18 20:03:28 add to sc_user succ. uid:19
+2015/09/18 20:03:28 add to sc_pwds succ. id:51
+2015/09/18 20:03:28 create user dir succ. uid:19
+2015/09/18 20:03:29 upload avatar succ
+2015/09/18 20:03:29 register succ.
+ utils.php log_info login fail, account:s0001 or passowrd:540bd55a2cf295b8ea9cd78650e89d03 error
+2015/09/19 00:35:18 log_info login fail, account:s0001 or passowrd:540bd55a2cf295b8ea9cd78650e89d03 error
+2015/09/19 00:38:16 /api/login.php login fail, account:s0001 or passowrd:540bd55a2cf295b8ea9cd78650e89d03 error
+2015/09/19 00:39:45 /api/login.php: login fail, account:s0001 or passowrd:540bd55a2cf295b8ea9cd78650e89d03 error
+2015/09/19 00:43:17 /api/login.php: login fail, parameters error: account:s0001 password: ios_token: 
+2015/09/19 00:51:26 /api/register_user.php: register fail, parameters error

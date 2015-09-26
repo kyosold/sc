@@ -1,0 +1,15 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+
+PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+exec </dev/null
+exec >/dev/null
+exec 2>/dev/null
+
+svc -dx /service/liao/*
+
+env - PATH=$PATH svscan /service/liao 2>&1 
+#env - PATH=$PATH svscan /service/liao 2>&1 | \
+#env - PATH=$PATH readproctitle service errors: ................................................................................................................................................................................................................................................................................................................................................................................................................
