@@ -457,80 +457,6 @@ int quit_cmd(struct session *session, char *pbuf, int pbuf_size)
 }
 
 
-int send_notice_to_other_progress(struct session *session, char *pbuf, int pbuf_size)
-{
-	log_debug("pbuf:%d:%s", pbuf_size, pbuf);
-	
-	int r = 0;
-	int n = pbuf_size;
-	
-	char pid[MAX_LINE] = {0};
-	char fuid[MAX_LINE] = {0};	
-	char fnick[MAX_LINE] = {0}; 
-	char tuid[MAX_LINE] = {0}; 
-	char m_type[MAX_LINE] = {0};
-	
-	while ((n > 0) && (pbuf != NULL) && (*pbuf != '\0')) {
-
-		char *psed = (char *)memchr(pbuf, ' ', strlen(pbuf));
-		if (psed != NULL) {
-			*psed = '\0';
-			int m = (psed - pbuf);
-
-			// 分段取变量
-			log_debug("ptok:[%s]", pbuf);
-
-			if (strncasecmp(pbuf, "pid:", 4) == 0) {
-				r = snprintf(pid, sizeof(pid), "%s", pbuf+4);
-				log_debug("from pid:%d:%s", r, pid);
-
-			} else if (strncasecmp(pbuf, "fuid:", 5) == 0) {
-				r = snprintf(fuid, sizeof(fuid), "%s", pbuf+5);
-				log_debug("from uid:%d:%s", r, fuid);	
-
-			} else if (strncasecmp(pbuf, "fnick:", 6) == 0) {
-				r = snprintf(fnick, sizeof(fnick), "%s", pbuf+6);
-				log_debug("from fnick:%d:%s", r, fnick);
-
-			} else if (strncasecmp(pbuf, "mtype:", 6) == 0) {
-				r = snprintf(m_type, sizeof(m_type), pbuf+6);
-				log_debug("from mtype:%d:%s", r, m_type);	
-				
-			} else if (strncasecmp(pbuf, "tuid:", 5) == 0) {
-				r = snprintf(tuid, sizeof(tuid), "%s", pbuf+5);
-				log_debug("from tuid:%d:%s", r, tuid);
-
-			}
-
-			pbuf = psed + 1;
-			n -= (m + 1);
-
-		} else {
-			if (pbuf != NULL) {
-				if (strncasecmp(pbuf, "tuid:", 5) == 0) {
-					r = snprintf(tuid, sizeof(tuid), "%s", pbuf+5);
-					while ( tuid[r-1] == '\r' || tuid[r-1] == '\n' )
-                        r--;
-                    tuid[r] = '\0';
-					log_debug("from tuid:%d:%s", r, tuid);
-				}
-			}
-
-			break;
-		}
-
-	}
-	
-	// 
-	n = send_msg_to_another_process(session->parent_out_fd, pid, fuid, fnick, m_type, tuid);
-	if (n == 0) {
-		return 0;
-	}
-	
-	return 1;
-}
-
-
 // SENDADDFRDREQ mid:%@ fuid:%@ fnick:%@ tuid:%@ \r\r\r\n
 int sendreq_addfriend(struct session *session, char *pbuf, int pbuf_size, char *mid, size_t mid_size, int *qid)
 {
@@ -1525,26 +1451,6 @@ void command(struct session *session)
 	log_debug("%d:%s", n, fbuf);
 
 	char rspsoneBuf[512] = {0};
-	
-	// SENDNOTICETOOTHERPROGRESS: 客户端给直接给别一进程发通知
-	if ( strncasecmp(fbuf, "SENDNOTICETOOTHERPROGRESS ", 26) == 0 ) { 
-		char *pbuf = fbuf + 26;
-		n -= 26;
-		int ret = send_notice_to_other_progress(session, pbuf, n);
-		if (ret == 0) {
-			n = snprintf(rspsoneBuf, sizeof(rspsoneBuf), "%s OK %s", TAG_SNTOP, DATA_END);
-		} else {
-			n = snprintf(rspsoneBuf, sizeof(rspsoneBuf), "%s FAIL%s", TAG_SNTOP, DATA_END);
-		}
-		
-		if (session->client_type == 1) {
-			send_to_websocket(session->client_fd, rspsoneBuf, n);
-		} else {
-			send_to_socket(session->client_fd, rspsoneBuf, n);
-		}
-
-		return;
-	}
 
 	// ALIVE: keep alive 保持在线
 	if ( strncasecmp(fbuf, "ALIVE ", 6) == 0 ) {

@@ -1,0 +1,159 @@
+<?php
+
+include_once('common.php');
+include_once('utils.php');
+
+$qid = trim(avoid_sql($_POST['qid']));
+$mid = trim(avoid_sql($_POST['mid']));
+$action = trim(avoid_sql($_POST['action']));
+
+$res = array();
+
+if (strlen($qid) > 0) {
+	$fuid = 0;
+	$fnick = '';
+	$tuid = 0;
+	$tnick = 0;
+	$tag_type = '';
+	$queue_type = '';
+	$expire = 0;
+
+	 try {   
+        $db = new PDO($PDO_DB_DSN, DB_USER, DB_PWD);
+            
+        $db->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER); //设置属性
+        $db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+
+		$sql = "SELECT id, mid, tag_type, fuid, fnick, tuid, queue_type, queue_file FROM sc_queue WHERE id = {$qid} AND expire = 0 LIMIT 1";
+		$stmt = $db->prepare($sql);
+        $stmt->execute();
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$tuid = $row['tuid']; 
+			$fuid = $row['fuid']; 
+			$fnick = $row['fnick'];
+			$tag_type = $row['tag_type'];	
+			$queue_type = $row['queue_type'];
+			$expire = 0;
+						
+		}
+
+		$sql = "SELECT nickname FROM sc_user WHERE id = {$tuid} LIMIT 1";
+		$stmt = $db->prepare($sql);
+        $stmt->execute();
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        	$tnick = base64_encode($row['nickname']);
+        }   
+
+		if ($fuid == 0 || $tuid == 0 || $fnick == '' || $tnick == '') {
+			$res = show_info('fail', '统出错(4005)，请稍候重试 :)');
+			echo json_encode($res);
+			return 0;
+		}
+/*
+		$db->beginTransaction();
+
+		$sql = "UPDATE sc_queue SET expire = 1 WHERE id = :qid LIMIT 1";
+		$stmt->bindParam(':qid', $qid, PDO::PARAM_INT);
+		if (!$stmt->execute()) {
+			throw new PDOException('系统出错(2001)，请稍候重试 :)');
+		}
+
+		if ($action == "add") {
+			$sql = "INSERT INTO sc_relationship (myid, fid, pid, status) VALUES ";
+			$sql .= "(:tuid, :fuid, 0, 0), (:fuid, :tuid, 0, 0);";
+			$stmt->bindParam(':fuid', $fuid, PDO::PARAM_INT);
+			$stmt->bindParam(':tuid', $tuid, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException('系统出错(2001)，请稍候重试 :)');
+			}
+			$affected_rows = $stmt->rowCount();
+			if ($affected_rows != 2) {
+				throw new PDOException('系统出错(2001)，请稍候重试 :)');
+			}
+
+			
+			$sql = "INSERT INTO sc_queue (mid, tag_type, fuid, fnick, tuid, queue_type, queue_file, queue_size, image_wh, expire, fdel, tdel) VALUES ";
+			$sql .= "(:mid, :tag_type, :fuid, :fnick, :tuid, :queue_type, :queue_file, :queue_size, :image_wh, :expire, :fdel, :tdel)";
+			$stmt->bindParam(':mid', $mid, PDO::PARAM_INT); 
+			$stmt->bindParam(':tag_type', "SYS", PDO::PARAM_STR); 
+			$stmt->bindParam(':fuid', $tuid, PDO::PARAM_INT); 
+			$stmt->bindParam(':fnick', $tnick, PDO::PARAM_STR); 
+			$stmt->bindParam(':tuid', $fuid, PDO::PARAM_INT);
+			$stmt->bindParam(':queue_type', "cmf", PDO::PARAM_STR);
+			$stmt->bindParam(':queue_file', "agree", PDO::PARAM_STR);
+			$stmt->bindParam(':queue_size', 0, PDO::PARAM_INT);
+			$stmt->bindParam(':image_wh', "", PDO::PARAM_STR);
+			$stmt->bindParam(':expire', 0, PDO::PARAM_INT);
+			$stmt->bindParam(':fdel', 0, PDO::PARAM_INT);
+			$stmt->bindParam(':tdel', 0, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException('系统出错(2001)，请稍候重试 :)');
+			}
+			$affected_rows = $stmt->rowCount();
+			if ($affected_rows != 1) {
+				throw new PDOException('系统出错(2001)，请稍候重试 :)');
+			}
+		
+		}
+
+		$db->commit();
+*/
+
+		// 发送一个事件
+		// 检查用户是否在线
+		$val = mc_get($fuid);	
+		if ($val == FALSE) {
+		}
+		echo "\nmc:{$fuid}=>". var_dump($val)."\n";	
+	
+	} catch (PDOException $e) {
+		$db->rollback();
+		log_info("register fail, ".$e->getMessage());
+		$res = show_info('fail', $e->getMessage());
+        $res['localdes'] = $e->getMessage();
+        echo json_encode($res);
+		return 1;
+	}		
+
+
+/*
+	if ($action == "add") {
+			$sql = "INSERT INTO liao_queue (tag_type, fuid, fnick, fios_token, tuid, tios_token, queue_type, queue_file, queue_size, expire) VALUES ";
+			$sql .= "('RESPADDFRDREQ', {$myid}, '{$mynick}', '{$myios_token}', {$fid}, '{$fios_token}', 'SYS', 'AGREE', 0, 0)";
+
+			if (mysql_query($sql, $conn)) {
+				// 成功, 发送APNS
+				$cmd = "./push.php '{$myios_token}' '{$myid}' '{$mynick}' 'SYS' '{$fid}'";
+				$fp = popen($cmd, "r");
+				while(!feof($fp)) {
+					$cmd_res .= fgets($fp);
+				}
+				pclose($fp);
+			}
+				
+		} 
+	} else if ($action == "cancel" || $action == "reject") {
+
+	}
+
+	mysql_close($conn);
+
+	$res = show_info('succ', '添加成功');
+	$res['des'] = $cmd_res;
+    
+	echo json_encode($res);
+*/
+    return 0;
+
+} else {
+	$res['status'] = 'fail';
+	$res['des'] = 'parameters error';
+}
+
+
+
+
+echo json_encode($res);
+
+?>
+

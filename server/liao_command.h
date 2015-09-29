@@ -23,6 +23,7 @@
 #define TAG_RECVADDFRIENDREQ "RECVADDFRDREQ"
 #define TAG_SENDGETNEWMSG "SENDGETNEWMSG"
 #define TAG_QUIT        "QUIT"
+#define TAG_SNTOP		"SENDNOTICETOOTHERPROGRESS"
 
 #define CRLF          (u_char *) "\r\n"
 #define DATA_END        (u_char *) "\r\n"

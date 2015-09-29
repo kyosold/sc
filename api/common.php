@@ -13,6 +13,9 @@ define('SCACHE_PATH', ENV_PATH."/cache/");
 define('DATA_PATH', ENV_PATH."/data/");
 define('DATA_HOST', "http://".HTTP_HOST."/data/");
 
+// APNS
+define('APNS_URI', ENV_PATH."/api/push.php");
+
 // Log
 define('LOG_FILE', ENV_PATH.'/api/logs/access.log');
 
@@ -24,6 +27,16 @@ define('DB_PWD', '1234qwer');
 define('DB_NAME', 'sc');
 
 $PDO_DB_DSN = "mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME.";charset=utf8";
+
+// MC Info
+define('MC_HOST', '127.0.0.1');
+define('MC_PORT', 11234);
+define('MC_TIMEOUT', 5);
+
+// SOCKET
+define("SOCK_HOST", "icarot.com");
+define("SOCK_PORT", 5027);
+define("SOCK_TIMEOUT", 3);
 
 // Other Info
 define('ROWS_OF_PAGE', 50);

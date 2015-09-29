@@ -86,3 +86,23 @@
 2015/09/19 00:39:45 /api/login.php: login fail, account:s0001 or passowrd:540bd55a2cf295b8ea9cd78650e89d03 error
 2015/09/19 00:43:17 /api/login.php: login fail, parameters error: account:s0001 password: ios_token: 
 2015/09/19 00:51:26 /api/register_user.php: register fail, parameters error
+2015/09/28 17:58:03 /api//login.php: login fail, account:s002 or passowrd:93dd4de5cddba2c733c65f233097f05a error
+2015/09/28 17:58:14 /api//login.php: login fail, account:s002 or passowrd:93dd4de5cddba2c733c65f233097f05a error
+2015/09/29 15:11:36 /api/set_friend_action.php: socket_read:SENDNOTICETOOTHERPROGRESS OK 
+
+2015/09/29 15:27:42 /api/set_friend_action.php: register fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 17:57:12 /api//set_friend_action.php: register fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:00:50 /api/set_friend_action.php: register fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:01:53 /api//set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:03:00 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:04:13 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:11:47 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:21:08 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:22:06 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:32:36 /api/set_friend_action.php: socket_read:SENDNOTICETOOTHERPROGRESS OK 
+
+2015/09/29 18:38:10 /api/set_friend_action.php: set friend action fail, 系统出错(2001)，请稍候重试 :)
+2015/09/29 18:40:02 /api/set_friend_action.php: set friend action fail, SQLSTATE[HY093]: Invalid parameter number: no parameters were bound
+2015/09/29 18:44:25 /api/set_friend_action.php: set friend action fail, SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c2Vh' in 'field list'
+2015/09/29 18:48:51 /api/set_friend_action.php: set friend action fail, SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c2Vh' in 'field list'
+2015/09/29 18:50:00 /api/set_friend_action.php: set friend action fail, SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c2Vh' in 'field list'
