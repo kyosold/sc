@@ -54,7 +54,7 @@ if (strlen($qid) > 0) {
 			return 0;
 		}
 
-		$need_notce = false;
+		$need_notice = false;
 
 		// ----- 开始事务 -----
 		$db->beginTransaction();
@@ -91,7 +91,7 @@ if (strlen($qid) > 0) {
 				throw new PDOException('系统出错(2001)，请稍候重试 :)');
 			}
 			
-			$need_notce = true;
+			$need_notice = true;
 		
 		} else if ($action == "cancel" || $action == "reject") {
 		}
@@ -99,7 +99,9 @@ if (strlen($qid) > 0) {
 		// ----- 完成事务 -----
 		$db->commit();
 
-		if ($need_notce == true) {
+
+		$need_notice = true;
+		if ($need_notice == true) {
 
 			// 发送一个通知
 			$ret = send_notice_to_uid($tuid, $tnick, $fuid, $tag_type);
@@ -109,9 +111,13 @@ if (strlen($qid) > 0) {
 				$res = show_info('succ', '处理成功');
 			}
 			echo json_encode($res);
+
+			log_info("set friend action: send_notice_to_uid {$ret}");
+
 			return 0;
 			
 		} else {
+			log_info("set friend action fail: 请选择执行的动作");
 			$res = show_info('fail', '请选择执行的动作');
 			echo json_encode($res);
 			return 0;
@@ -130,6 +136,7 @@ if (strlen($qid) > 0) {
     return 0;
 
 } else {
+	log_info("set friend action fail: parameters error");
 	$res['status'] = 'fail';
 	$res['des'] = 'parameters error';
 }

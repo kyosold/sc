@@ -62,12 +62,77 @@ function get_avatar_url($uid)
 	return DATA_HOST ."/". $uid ."/avatar/s_avatar.jpg";
 }
 
+
+function write_content_to_file_with_uid($tuid, $content) 
+{
+	// 生成目录
+	$path = DATA_PATH ."/". $tuid ."/queue/";
+	$file = "";
+	$succ = FALSE;
+	
+	if (!file_exists($path)) {
+		// 创建目录
+		if (mk_dir($path) !== TRUE) {
+			log_error('fail', 'mkdir {$path} fail');
+			return "";
+		}
+	}
+	
+	$seq = 0;
+	for ($i=0; $i<100; $i++,$seq++) {
+		$file = $path ."/". time() .".". $seq;
+		
+		if (file_exists($file)) {
+			continue;
+		}
+		
+		$succ = file_put_contents($file, $content);
+		if ($succ === FALSE) {
+			continue;
+		} else {
+			break;
+		}
+		 
+	}
+	
+	return $file;
+}
+
+
+// 返回:
+//	-1: fail	other: pid
+function write_queue_to_db($db, $mid, $tag_type, $fuid, $fnick, $tuid, $queue_type, $queue_file, $queue_size, $image_wh)
+{
+	try {
+		$sql = "INSERT INTO sc_queue (mid, tag_type, fuid, fnick, tuid, queue_type, queue_file, queue_size, image_wh, expire) VALUES ";
+		$sql .= "('{$mid}', '{$tag_type}', {$fuid}, '{$fnick}', {$tuid}, '{$queue_type}', '{$queue_file}', {$queue_size}, '{$image_wh}', 0)";
+		
+		$stmt = $db->prepare($sql);
+		if (!$stmt->execute()) {
+			throw new PDOException($sql);
+		}
+
+		$pid = $db->lastInsertId();
+
+		return $pid;
+
+	} catch (PDOException $e) {
+		log_error("write queue to db fail:". $e->getMessage());
+		
+		return -1;
+	}
+}
+
+
+
 // return bool
 function send_notice_with_apns($fuid, $fnick, $tuid, $tag_type)
 {
 	// 获取收件人的ios_token
 	$ios_token = '';
 	try {
+		global $PDO_DB_DSN;
+
 		$db = new PDO($PDO_DB_DSN, DB_USER, DB_PWD);
             
         $db->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER); //设置属性
@@ -82,15 +147,25 @@ function send_notice_with_apns($fuid, $fnick, $tuid, $tag_type)
 			log_info("user:{$tuid} is not set apns");
 			return false;
 		}
+
+		if (strlen($ios_token) <= 0 ) {
+			log_info("user ios_token is not valid, so don't apns");
+			return false;
+		}
+
 		
 		// 发送apns
-		$apn_cmd = APNS_URI." {$ios_token} {$fuid} {$fnick} {$tag_type} {$tuid}";
-		$apn_fp = popen($apn_cmd, "r");
-		while (!feof($apn_fp)) {
-			$apn_res .= fgets($apn_fp);
+		$apn_res = '';
+		$apn_cmd = APNS_URI." '{$ios_token}' '{$fuid}' '{$fnick}' '{$tag_type}' '{$tuid}' ";
+
+		$pipe = popen($apn_cmd, "r");
+		while (!feof($pipe)) {
+			$apn_res .= fgets($pipe);
 		}
-		pclose($apn_fp);
+
+		pclose($pipe);
 		
+		$apn_res = str_replace("\n", " LF ", $apn_res);
 		log_info("APNS result:{$apn_res}");
 		
 		return true;
@@ -136,7 +211,7 @@ function send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type)
 				break;
 			}
 			
-			echo $buffer."\n";
+			//echo $buffer."\n";
 			log_info("socket_read:{$buffer}");
 			break;
 			
@@ -165,13 +240,13 @@ function send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type)
 }
 
 // return bool
-function send_notice_to_uid($fuid, $fnick, $tuid, $tag_type)
+function send_notice_to_uid($fuid, $fnick, $tuid, $tpid, $tag_type)
 {
 	$ret = false;
 	
 	// 检查收件人是否在线
 	$tpid = mc_get($tuid);
-	if ($tpid != false) {
+	if ($tpid != false && strlen($tpid) > 0) {
 		// 用户在线，使用Socket给用户发送通知
 		$ret = send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type);
 		if ($ret == true) {
@@ -180,6 +255,14 @@ function send_notice_to_uid($fuid, $fnick, $tuid, $tag_type)
 	} 
 	
 	// 用户不在线，使用APNS发送通知
+
+	// 判断是否可以使用apns推送
+	if ($tpid > 0) {
+		// 有风险,可能发件人被收件人设置隐藏
+		log_info("don't send APNS, maybe receiver set hidden to sender");
+		return 0;
+	}
+
 	$ret = send_notice_with_apns($fuid, $fnick, $tuid, $tag_type);
 	return $ret;
 }
@@ -220,5 +303,10 @@ function mc_delete($key)
 
 	return $ret;
 }
+
+
+
+
+
 
 ?>

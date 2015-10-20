@@ -43,6 +43,18 @@ if ( (strlen($account) > 0)
 			echo json_encode($res);
 			return 0;
 		}
+
+		// 查询用户是否已经在线了
+		$tpid = mc_get($uid);
+		if ($tpid != false && strlen($tpid) > 0) {
+			// 发送登录通知给正在在线用户
+			// .....
+
+			log_info("login fail, uid:{$uid} has online");
+			$res = show_info('fail', '登录失败, 该帐号已经登录,请从另一设备上退出后再登录');
+			echo json_encode($res);
+			return 0;
+		}
 		
 		// 查询用户信息
 		$sql = "SELECT nickname, birthday, gender, status FROM sc_user WHERE id = :uid LIMIT 1";
