@@ -30,7 +30,7 @@ if ((strlen($fuid) > 0 && strlen($tag_type) > 0) || strlen($user_where) > 0) {
 		$queue = array();
 		$sql = '';
 
-		$select = "SELECT id, mid, tag_type, fuid, fnick, tuid, queue_type, queue_file, queue_size, image_wh, cdate, expire FROM sc_queue ";
+		$select = "SELECT id, mid, tag_type, fuid, fnick, tuid, queue_type, queue_file, queue_size, image_wh, cdate, expire, fdel, tdel FROM sc_queue ";
 		$where = '';
 		if (strlen($fuid) > 0) {
 			$where .= " fuid = {$fuid} ";	
@@ -82,9 +82,9 @@ if ((strlen($fuid) > 0 && strlen($tag_type) > 0) || strlen($user_where) > 0) {
 		}
 
 		if (strlen($where) > 0) {
-			$sql = $select." WHERE ".$where." LIMIT ".ROWS_OF_PAGE;
+			$sql = $select." WHERE ".$where;
 		} else {
-			$sql = $select." LIMIT ".ROWS_OF_PAGE;
+			$sql = $select;
 		}
 
 
@@ -105,6 +105,12 @@ if ((strlen($fuid) > 0 && strlen($tag_type) > 0) || strlen($user_where) > 0) {
 			$item['image_wh'] = $row['image_wh'];
 			$item['cdate'] = $row['cdate'];
 			$item['expire'] = $row['expire'];
+			$item['fdel'] = $row['fdel'];
+			$item['tdel'] = $row['tdel'];
+
+			if ($row['queue_type'] == 'txt') {
+				$item['content'] = file_get_contents($row['queue_file']);
+			}
 
 			$queue[] = $item;	
 

@@ -22,11 +22,13 @@ if ($argc != 6) {
 }
 
 $deviceToken = $argv[1];
-$fuid = $argv[2];
-$fnick = $argv[3];
-$ftype = $argv[4];
-$tuid = $argv[5];
-$message = '您收到一条来自 '. base64_decode($fnick) .' 的消息';
+$qid = $argv[2];
+$fuid = $argv[3];
+$fnick = $argv[4];
+$ftype = $argv[5];
+$tuid = $argv[6];
+//$message = '您收到一条来自 '. base64_decode($fnick) .' 的消息';
+$message = '您收到一条消息在 '. date('Y-m-d H:i:s');
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -465,6 +465,7 @@ int send_notice_to_other_progress(struct session *session, char *pbuf, int pbuf_
 	int n = pbuf_size;
 	
 	char pid[MAX_LINE] = {0};
+	char mqid[MAX_LINE] = {0};
 	char fuid[MAX_LINE] = {0};	
 	char fnick[MAX_LINE] = {0}; 
 	char tuid[MAX_LINE] = {0}; 
@@ -483,6 +484,10 @@ int send_notice_to_other_progress(struct session *session, char *pbuf, int pbuf_
 			if (strncasecmp(pbuf, "pid:", 4) == 0) {
 				r = snprintf(pid, sizeof(pid), "%s", pbuf+4);
 				log_debug("from pid:%d:%s", r, pid);
+
+			} else if (strncasecmp(pbuf, "mqid:", 5) == 0) {
+				r = snprintf(mqid, sizeof(mqid), "%s", pbuf+5);
+				log_debug("from mqid:%d:%s", r, mqid);
 
 			} else if (strncasecmp(pbuf, "fuid:", 5) == 0) {
 				r = snprintf(fuid, sizeof(fuid), "%s", pbuf+5);
@@ -522,7 +527,8 @@ int send_notice_to_other_progress(struct session *session, char *pbuf, int pbuf_
 	}
 	
 	// 
-	n = send_msg_to_another_process(session->parent_out_fd, pid, fuid, fnick, m_type, tuid);
+	//n = send_msg_to_another_process(session->parent_out_fd, pid, fuid, fnick, m_type, tuid);
+	n = send_msg_to_another_process_v2(session->parent_out_fd, pid, mqid, fuid, fnick, m_type, tuid);
 	if (n == 0) {
 		return 0;
 	}
@@ -1773,6 +1779,7 @@ void system_command(MFILE *mfp_parent)
 		if ( strncasecmp(fbuf, "type:SSYSTEM_SENDMSG ", 21) == 0 ) {
 			// 内部通信
 			char cmd_pid[MAX_LINE] = {0}; 
+			char cmd_mqid[MAX_LINE] = {0}; 
 			char cmd_fuid[MAX_LINE] = {0}; 
 			char cmd_fnick[MAX_LINE] = {0}; 
 			char cmd_mtype[MAX_LINE] = {0}; 
@@ -1795,6 +1802,10 @@ void system_command(MFILE *mfp_parent)
 						if (strncasecmp(pbuf, "pid:", 4) == 0) {
 							r = snprintf(cmd_pid, sizeof(cmd_pid), "%s", pbuf+4);
 							log_debug("from cmd_pid:%d:%s", r, cmd_pid);
+
+						} else if (strncasecmp(pbuf, "mqid:", 5) == 0) {
+							r = snprintf(cmd_mqid, sizeof(cmd_mqid), "%s", pbuf+5);
+							log_debug("from cmd_mqid:%d:%s", r, cmd_mqid);
 
 						} else if (strncasecmp(pbuf, "fuid:", 5) == 0) {
 							r = snprintf(cmd_fuid, sizeof(cmd_fuid), "%s", pbuf+5);
@@ -1837,7 +1848,8 @@ void system_command(MFILE *mfp_parent)
 
 
 			// send socket to client
-			int succ = send_socket_cmd(session_st.client_fd, session_st.client_type, cmd_fuid, cmd_fnick, cmd_mtype, cmd_tuid);
+			//int succ = send_socket_cmd(session_st.client_fd, session_st.client_type, cmd_fuid, cmd_fnick, cmd_mtype, cmd_tuid);
+			int succ = send_socket_cmd_v2(session_st.client_fd, session_st.client_type, cmd_mqid, cmd_fuid, cmd_fnick, cmd_mtype, cmd_tuid);
 			log_debug("send_socket_cmd to client socket fd:%d result:%d", session_st.client_fd, succ);
 
 		} else if ( strncasecmp(fbuf, "type:SSYSTEM_SENDAPNS ", 21) == 0 ) {

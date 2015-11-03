@@ -69,6 +69,9 @@ function write_content_to_file_with_uid($tuid, $content)
 	$path = DATA_PATH ."/". $tuid ."/queue/";
 	$file = "";
 	$succ = FALSE;
+
+	// hash目录
+	$path .= date('Ymd')."/";
 	
 	if (!file_exists($path)) {
 		// 创建目录
@@ -95,6 +98,8 @@ function write_content_to_file_with_uid($tuid, $content)
 		 
 	}
 	
+	$file = str_replace(DATA_PATH, DATA_HOST, $file);
+
 	return $file;
 }
 
@@ -126,7 +131,7 @@ function write_queue_to_db($db, $mid, $tag_type, $fuid, $fnick, $tuid, $queue_ty
 
 
 // return bool
-function send_notice_with_apns($fuid, $fnick, $tuid, $tag_type)
+function send_notice_with_apns($qid, $fuid, $fnick, $tuid, $tag_type)
 {
 	// 获取收件人的ios_token
 	$ios_token = '';
@@ -156,7 +161,7 @@ function send_notice_with_apns($fuid, $fnick, $tuid, $tag_type)
 		
 		// 发送apns
 		$apn_res = '';
-		$apn_cmd = APNS_URI." '{$ios_token}' '{$fuid}' '{$fnick}' '{$tag_type}' '{$tuid}' ";
+		$apn_cmd = APNS_URI." '{$ios_token}' '{$qid}' '{$fuid}' '{$fnick}' '{$tag_type}' '{$tuid}' ";
 
 		$pipe = popen($apn_cmd, "r");
 		while (!feof($pipe)) {
@@ -177,7 +182,7 @@ function send_notice_with_apns($fuid, $fnick, $tuid, $tag_type)
 	}
 }
 
-function send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type)
+function send_notice_with_socket($tpid, $mqid, $fuid, $fnick, $tuid, $tag_type)
 {
 	try {
 		$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -192,7 +197,8 @@ function send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type)
 		}
 		
 		// send cmd
-		$wbuf = "SENDNOTICETOOTHERPROGRESS pid:{$tpid} fuid:{$fuid} fnick:{$fnick} mtype:{$tag_type} tuid:{$tuid} \r\n\r\n";
+		$wbuf = "SENDNOTICETOOTHERPROGRESS pid:{$tpid} mqid:{$mqid} fuid:{$fuid} fnick:{$fnick} mtype:{$tag_type} tuid:{$tuid} \r\n\r\n";
+		log_info("wbuf:{$wbuf}");
 		$wn = socket_write($socket, $wbuf);
 		if ($wn === false) {
 			log_error("socket write fail:". socket_strerror());
@@ -240,7 +246,7 @@ function send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type)
 }
 
 // return bool
-function send_notice_to_uid($fuid, $fnick, $tuid, $tpid, $tag_type)
+function send_notice_to_uid($fuid, $fnick, $tuid, $tpid, $tag_type, $qid)
 {
 	$ret = false;
 	
@@ -248,7 +254,8 @@ function send_notice_to_uid($fuid, $fnick, $tuid, $tpid, $tag_type)
 	$tpid = mc_get($tuid);
 	if ($tpid != false && strlen($tpid) > 0) {
 		// 用户在线，使用Socket给用户发送通知
-		$ret = send_notice_with_socket($tpid, $fuid, $fnick, $tuid, $tag_type);
+		log_info("send_notice_with_socket qid:{$qid}");
+		$ret = send_notice_with_socket($tpid, $qid, $fuid, $fnick, $tuid, $tag_type);
 		if ($ret == true) {
 			return $ret;
 		}
@@ -263,7 +270,7 @@ function send_notice_to_uid($fuid, $fnick, $tuid, $tpid, $tag_type)
 		return 0;
 	}
 
-	$ret = send_notice_with_apns($fuid, $fnick, $tuid, $tag_type);
+	$ret = send_notice_with_apns($qid, $fuid, $fnick, $tuid, $tag_type);
 	return $ret;
 }
 

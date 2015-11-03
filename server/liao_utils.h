@@ -17,6 +17,8 @@ void reinit_data_without_free(MFILE *mfp_in);
 
 void online_dump(dictionary *d, int fd);
 int send_msg_to_another_process(int parent_w_fd, char *pid, char *fuid, char *fnick, char *type, char *tuid);
+int send_msg_to_another_process_v2(int client_fd, char *pid, char *mqid, char *fuid, char *fnick, char *type, char *tuid);
+
 int send_socket_cmd(int client_fd, int client_type, char *fuid, char *fnick, char *type, char *tuid);
 void send_apn_cmd(struct config_t *config, char *fuid, char *fnick, char *type, char *tuid);
 

@@ -25,6 +25,7 @@ if (strlen($mid) > 0 &&
         $db->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER); //设置属性
         $db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
+		$tpid = 0;
 		// ----- 查询是否已经是好友 -----
 		// 查询关系表
 		$sql = "SELECT id, pid, status FROM sc_relationship WHERE myid = {$fuid} AND fid = {$tuid} LIMIT 1";
@@ -59,7 +60,8 @@ if (strlen($mid) > 0 &&
 		}
 
 		// 2. 给对方发送通知 
-		$ret = send_notice_to_uid($fuid, $fnickB64, $tuid, $tag_type);
+		log_info("send_notice_to_uid({$fuid}, {$fnickB64}, {$tuid}, {$tpid}, {$tag_type}, {$pid})");
+		$ret = send_notice_to_uid($fuid, $fnickB64, $tuid, $tpid, $tag_type, $pid);
 		if ($ret != true) {
 			log_info("send notice to tuid:{$tuid} tag_type:{$tag_type} fail");
         }   

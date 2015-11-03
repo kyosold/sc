@@ -18,6 +18,8 @@ if (strlen($qid) > 0) {
 	$queue_type = '';
 	$expire = 0;
 
+	$pid = 0;
+
 	 try {   
         $db = new PDO($PDO_DB_DSN, DB_USER, DB_PWD);
             
@@ -86,6 +88,7 @@ if (strlen($qid) > 0) {
 			if (!$stmt->execute()) {
 				throw new PDOException('系统出错(2001)，请稍候重试 :)');
 			}
+			$pid = $db->lastInsertId();
 			$affected_rows = $stmt->rowCount();
 			if ($affected_rows != 1) {
 				throw new PDOException('系统出错(2001)，请稍候重试 :)');
@@ -101,10 +104,11 @@ if (strlen($qid) > 0) {
 
 
 		$need_notice = true;
-		if ($need_notice == true) {
+		if ($need_notice == true && $pid > 0) {
 
+			$tpid = 0;
 			// 发送一个通知
-			$ret = send_notice_to_uid($tuid, $tnick, $fuid, $tag_type);
+			$ret = send_notice_to_uid($tuid, $tnick, $fuid, $tpid, $tag_type, $pid);
 			if ($ret == true) {
 				$res = show_info('succ', '处理成功');
 			} else {

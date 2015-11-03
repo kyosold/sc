@@ -410,6 +410,20 @@ int send_msg_to_another_process(int client_fd, char *pid, char *fuid, char *fnic
 	return 0;
 }
 
+int send_msg_to_another_process_v2(int client_fd, char *pid, char *mqid, char *fuid, char *fnick, char *type, char *tuid)
+{
+	int buf_size = 21 + 4 + strlen(pid) + 6 + strlen(mqid) + 7 + strlen(fuid) + 7 + strlen(fnick) + 7 + strlen(type) + 6 + strlen(tuid) + 12 + 128;
+	char *pbuf = (char *)calloc(1, buf_size);
+	if (pbuf != NULL) {
+		int n = snprintf(pbuf, buf_size, "type:SSYSTEM_SENDMSG pid:%s mqid:%s fuid:%s fnick:%s mtype:%s tuid:%s \n", pid, mqid, fuid, fnick, type, tuid);
+		send_to_socket(client_fd, pbuf, n);
+
+		clean_mem_buf(pbuf);
+		buf_size = 0;
+	}
+
+	return 0;
+}
 
 int send_socket_cmd(int client_fd, int client_type, char *fuid, char *fnick, char *type, char *tuid)
 {
@@ -419,10 +433,16 @@ int send_socket_cmd(int client_fd, int client_type, char *fuid, char *fnick, cha
 		log_error("base64_decode fail");
 		return 1;
 	}
+
+	// get current time
+	time_t _cur_time_t = time(0);
+	char _cur_time[256] = {0};
+	strftime(_cur_time, sizeof(_cur_time), "%Y-%m-%d %H:%M:%S", localtime(&_cur_time_t));	
 	
 
 	char notice_mssage[MAX_LINE * 5] = {0};
-	int n = snprintf(notice_mssage, sizeof(notice_mssage), "您收到一条来自 %s 的消息", b64_nick);
+	//int n = snprintf(notice_mssage, sizeof(notice_mssage), "您收到一条来自 %s 的消息", b64_nick);
+	int n = snprintf(notice_mssage, sizeof(notice_mssage), "您收到一条消息在 %s", _cur_time);
 	if (n <= 0) {
 		log_error("snprintf fail");	
 		return 1;
@@ -469,6 +489,69 @@ int send_socket_cmd(int client_fd, int client_type, char *fuid, char *fnick, cha
 		
 }
 
+int send_socket_cmd_v2(int client_fd, int client_type, char *qid, char *fuid, char *fnick, char *type, char *tuid)
+{
+	char b64_nick[MAX_LINE] = {0};
+	int b64_n = base64_decode(fnick, b64_nick, MAX_LINE);
+	if (b64_n <= 0) {
+		log_error("base64_decode fail");
+		return 1;
+	}
+
+	// get current time
+	time_t _cur_time_t = time(0);
+	char _cur_time[256] = {0};
+	strftime(_cur_time, sizeof(_cur_time), "%Y-%m-%d %H:%M:%S", localtime(&_cur_time_t));	
+	
+
+	char notice_mssage[MAX_LINE * 5] = {0};
+	//int n = snprintf(notice_mssage, sizeof(notice_mssage), "您收到一条来自 %s 的消息", b64_nick);
+	int n = snprintf(notice_mssage, sizeof(notice_mssage), "您收到一条消息在 %s", _cur_time);
+	if (n <= 0) {
+		log_error("snprintf fail");	
+		return 1;
+	}
+
+	int notice_msg_size = n * 5;
+	char *pnotice_msg = (char *)calloc(1, notice_msg_size);
+	if (pnotice_msg == NULL) {
+		log_error("calloc faile");
+		return 1;
+	}
+
+	int b64_size = base64_encode(notice_mssage, n, pnotice_msg, notice_msg_size);
+	if (b64_size < 0) {
+		log_error("base64_encode fail:%s", notice_mssage);
+
+		clean_mem_buf(pnotice_msg);
+		notice_msg_size = 0;
+
+		return 1;		
+	}
+
+	int notice_size = strlen(type) + strlen(qid) + strlen(fuid) + strlen(fnick) + strlen(tuid) + b64_size + 512; 
+	char *pnotice = (char *)calloc(1, notice_size);
+	if (pnotice != NULL) {
+		n = snprintf(pnotice, notice_size, "MESSAGENOTICE %s %s %s %s %s %s %s", type, qid, fuid, fnick, tuid, pnotice_msg, DATA_END);
+
+		//safe_write(client_t, pnotice, n);
+		//send_to_client(parent_w_fd, pnotice, n);
+		if (client_type == 1) {
+			send_to_websocket(client_fd, pnotice, n);
+		} else {
+			send_to_socket(client_fd, pnotice, n);
+		}
+
+		clean_mem_buf(pnotice);
+		notice_size = 0;
+	}
+
+	clean_mem_buf(pnotice_msg);
+	notice_msg_size = 0;
+
+	return 0;
+		
+}
 
 void send_apn_cmd(struct config_t *config, char *fuid, char *fnick, char *type, char *tuid)
 {
