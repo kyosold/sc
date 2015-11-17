@@ -20,23 +20,23 @@ define('APNS_URI', ENV_PATH."/api/push.php");
 define('LOG_FILE', ENV_PATH.'/api/logs/access.log');
 
 // Database info
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_USER', 'root');
-define('DB_PWD', '1234qwer');
-define('DB_NAME', 'sc');
+define('DB_HOST', 'xxxxxxx');
+define('DB_PORT', 'xxxxxxx');
+define('DB_USER', 'xxxxxxx');
+define('DB_PWD', 'xxxxxxx');
+define('DB_NAME', 'xxxxxxx');
 
 $PDO_DB_DSN = "mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME.";charset=utf8";
 
 // MC Info
-define('MC_HOST', '127.0.0.1');
-define('MC_PORT', 11234);
-define('MC_TIMEOUT', 5);
+define('MC_HOST', 'xxxxxxx');
+define('MC_PORT', xxxxxxx);
+define('MC_TIMEOUT', xxxxxxx);
 
 // SOCKET
-define("SOCK_HOST", "icarot.com");
-define("SOCK_PORT", 5027);
-define("SOCK_TIMEOUT", 3);
+define("SOCK_HOST", "xxxxxxx");
+define("SOCK_PORT", xxxxxx);
+define("SOCK_TIMEOUT", xxxxx);
 
 // Hide Number
 define("MAX_HIDE_NUMBER", 3);
