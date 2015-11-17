@@ -107,6 +107,7 @@ if (strlen($qid) > 0) {
 		if ($need_notice == true && $pid > 0) {
 
 			$tpid = 0;
+			$tag_type = "SYS_CFR";		// confirm friend relationship
 			// 发送一个通知
 			$ret = send_notice_to_uid($tuid, $tnick, $fuid, $tpid, $tag_type, $pid);
 			if ($ret == true) {

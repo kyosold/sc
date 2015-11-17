@@ -12,12 +12,33 @@ $res = array();
 
 if ((strlen($uid) > 0) && (strlen($qid) > 0)) {
 
-	$msg_queue = array();
+	$queue = array();
 
 	try {
+		$db = new PDO($PDO_DB_DSN, DB_USER, DB_PWD);
+    
+        $db->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER); //设置属性
+        $db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+
+
 		$sql = "";
+
+		// 获取用户已读最大qid
+		$db_qid = 0;
+		$sql = "SELECT read_qid FROM sc_user WHERE id = {$uid} LIMIT 1";
+		$stmt = $db->prepare($sql);
+        $stmt->execute();
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$db_qid = $row['read_qid'];	
+		}	
+
+		if ($qid < $db_qid) {
+			$qid = $db_qid;
+		}
+
+
 		$select = "SELECT id, mid, tag_type, fuid, fnick, tuid, queue_type, queue_file, queue_size, image_wh, cdate, expire, fdel, tdel FROM sc_queue ";
-		$where = " fuid = {$uid} AND id > {$qid} ";
+		$where = " tuid = {$uid} AND id > {$qid} ";
 		$sql = $select." WHERE ".$where;
 
 		$stmt = $db->prepare($sql);
@@ -40,6 +61,8 @@ if ((strlen($uid) > 0) && (strlen($qid) > 0)) {
             $queue[] = $item;
 
         }
+
+		$res = show_info('succ', '处理成功');
 		$res['queue'] = $queue;
 
 		echo json_encode($res);
