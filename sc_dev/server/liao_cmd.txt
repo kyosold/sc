@@ -1,0 +1,107 @@
+# 客户端发送给服务器端数据以: \r\n\r\n 为结尾标识
+# 服务器端发送给客户端以: \r\n 为结尾标识
+#
+# 数据参数以空格分隔, key与value以冒号分隔,
+# 数据值或内容格式不定则用base64编码后发送.
+
+# 1.0 Login:
+LOGIN account:[account] password:[password] get_friend_list:1 \r\n\r\n
+
+# ex: LOGIN account:abalam password:123qwe ios_token:111 get_friend_list:1 \r\n\r\n
+
+# Server Response:
+# LOGIN OK
+
+#
+# 说明:
+#     登录、登出 使用http api (包括用户认证、添加与删除用户通知)
+#	  在线、离线 使用server (注册在线Helo、离线Quit)
+#
+#
+
+############################################################
+
+# 1.1 register online:
+# 注册用户在线
+HELO uid:[from id] \r\n\r\n
+
+# ex: HELO uid:4 \r\n\r\n
+
+# Server Response:
+# HELO OK \r\n
+
+############################################################
+
+# 1.2 quit online:
+QUIT uid:[from id] \r\n\r\n
+
+# ex: QUIT uid:3 \r\n\r\n
+
+# Server Response:
+# QUIT ok\r\n
+
+############################################################
+
+# 1.3 get offline message
+GETMSGOFFLINE fuid:[from id] \r\n\r\n  
+
+# ex: GETMSGOFFLINE\r\n\r\n
+
+############################################################
+
+# 1.3 get offline message
+SENDFRIENDREQ mid:[msg id] fuid:[from id] fios_token:[from ios_token] fnick:[from nickname] tuid:[to id] tios_token:[to ios_token]\r\n\r\n
+
+# ex: SENDFRIENDREQ mid:200001427965054505 fuid:1 fios_token:11111111 fnick:Abalam tuid:10 tios_token:11111111\r\n\r\n
+# result: SENDADDFRDREQ OK 200001427967935319\n
+
+############################################################
+
+# 1.3 send txt message
+SENDTXT mid:[msg id] fuid:[from id] fios_token:[from ios_token] fnick:[from nickname] tuid:[to id] tios_token:[to ios_token] message:[msg]\r\n\r\n
+
+# nick: is base64 encode
+# msg: is base64 encoded
+
+# ex: SENDTXT mid:200001423969757598 fuid:4 fios_token:0cf812d02f1e0df951851b8f0279b0a05b0157efc71f296ebf0b296ff328bf17 fnick:QXBwbGU= tuid:1 tios_token:0cf812d02f1e0df951851b8f0279b0a05b0157efc71f296ebf0b296ff328bf17 message:8J+YhvCfmIY=\r\n\r\n
+
+
+# Server Responae:
+# SENDTXT [mid] ok\r\n
+
+
+############################################################
+
+# 1.4 send img message
+SENDIMG mid:[msg id] fuid:[from id] fios_token:[from ios_token] fnick:[from nickname] tuid:[to id] tios_token:[to ios_token] file_name:[image name] message:[msg]\r\n\r\n
+
+# nick: is base64 encode
+# msg: is base64 encoded
+
+# ex: 
+# SENDTXT fuid:1 fios_token:0cf812d02f1e0df951851b8f0279b0a05b0157efc71f296ebf0b296ff328bf17 tuid:4 tios_token:0cf812d02f1e0df951851b8f0279b0a05b0157efc71f296ebf0b296ff328bf17 message:5L2g5aW977yM5oiR5pivQWJhbGFt77yM5Zi/5Zi/8J+Yi/CfmIvwn5iL8J+Yi/CfmIvwn5iL8J+Yi/CfmIvwn5iL8J+Yi/CfmIvwn5iL8J+Yiw==\r\n\r\n
+
+
+# Server Response:
+# SENDIMG mid ok\r\n
+
+############################################################
+
+# 1.4 send audio message
+SENDAUDIO mid:[msg id] fuid:[from id] fios_token:[from ios_token] fnick:[from nickname] tuid:[to id] tios_token:[to ios_token] file_name:[image name] message:[msg]\r\n\r\n
+
+# nick: is base64 encode
+# msg: is base64 encoded
+
+# ex:
+# SENDAUDIO mid:400001429860884033 fuid:26 fios_token:e81bf81e5c74724cd44f0fe72524a52f27f8d567030c91053671256e2edbd9b7 fnick:5bCP54aK tuid:27 tios_token:e81bf81e5c74724cd44f0fe72524a52f27f8d567030c91053671256e2edbd9b7 file_name:1429860634.spx message:AAAADU9n
+
+
+# 1.5 send delete security chat message
+DELETESCMData mid:[msg id] fuid:[from id] fios_token:[from ios_token] fnick:[from nickname] tuid:[to id] qids:[qids]\r\n\r\n
+
+# qids: 1,2,4,5
+
+
+
+

@@ -1,0 +1,13 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+
+PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+export PATH
+
+exec </dev/null
+exec >/dev/null
+exec 2>/dev/null
+
+svc -dx /service/liao_dev/*
+
+env - PATH=$PATH svscan /service/liao_dev 2>&1 
